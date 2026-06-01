@@ -1,0 +1,22 @@
+<view class="container">
+  <!-- 列表 -->
+  <view wx:if="{{items.length > 0}}">
+    <view class="history-item" wx:for="{{items}}" wx:key="taskUuid" data-taskuuid="{{item.taskUuid}}" bindtap="viewDetail">
+      <view class="hi-left">
+        <text class="hi-week">第{{item.week}}周</text>
+        <text class="hi-type">{{item.typeName}}</text>
+      </view>
+      <view class="hi-right">
+        <text class="hi-result">✅ {{item.success}} / {{item.total}}</text>
+        <text class="hi-date">{{item.createdAt}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:else class="empty">
+    <text class="empty-icon">📭</text>
+    <text class="empty-text">暂无录入记录</text>
+    <text class="empty-hint">完成一次录入后这里会显示记录</text>
+  </view>
+</view>

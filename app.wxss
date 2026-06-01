@@ -1,0 +1,19 @@
+page {
+  --primary: #1B62A5;
+  --primary-light: #4A90D9;
+  --accent: #E8A838;
+  --bg: #F5F7FA;
+  --card-bg: #FFFFFF;
+  --text: #333333;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border: #EEEEEE;
+  --success: #52C41A;
+  --danger: #FF4D4F;
+  --warning: #FAAD14;
+
+  background-color: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  color: var(--text);
+  font-size: 28rpx;
+}

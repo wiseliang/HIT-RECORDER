@@ -1,0 +1,115 @@
+.container {
+  padding: 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon-wrap {
+  margin: 32rpx 0 24rpx;
+}
+.icon {
+  font-size: 80rpx;
+}
+
+.summary-card {
+  width: 100%;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+.summary-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+  text-align: center;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10rpx 0;
+}
+.sum-label { color: #999; font-size: 28rpx; }
+.sum-val { font-weight: 600; font-size: 28rpx; }
+
+/* 统计 */
+.stats {
+  display: flex;
+  width: 100%;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+.stat-item {
+  flex: 1;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx 0;
+  text-align: center;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+.stat-num {
+  display: block;
+  font-size: 44rpx;
+  font-weight: bold;
+}
+.stat-label { font-size: 24rpx; color: #999; }
+.success .stat-num { color: #52C41A; }
+.skipped .stat-num { color: #FAAD14; }
+.error .stat-num { color: #FF4D4F; }
+
+/* 失败列表 */
+.error-list {
+  width: 100%;
+  background: #FFF2F0;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 32rpx;
+}
+.error-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #FF4D4F;
+  display: block;
+  margin-bottom: 12rpx;
+}
+.error-item {
+  display: flex;
+  gap: 12rpx;
+  padding: 8rpx 0;
+}
+.error-seq {
+  font-size: 26rpx;
+  color: #FF4D4F;
+  font-weight: 600;
+}
+.error-reason {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 按钮 */
+.actions {
+  width: 100%;
+  display: flex;
+  gap: 16rpx;
+}
+.btn-secondary, .btn-primary {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 30rpx;
+  border-radius: 44rpx;
+  border: none;
+  text-align: center;
+}
+.btn-secondary {
+  background: #F5F5F5;
+  color: #666;
+}
+.btn-primary {
+  background: #1B62A5;
+  color: #fff;
+}

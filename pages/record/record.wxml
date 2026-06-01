@@ -1,0 +1,107 @@
+<view class="container">
+  <!-- 标题 -->
+  <view class="header">
+    <text class="header-title">{{typeName}}</text>
+    <text class="header-desc" wx:if="{{type !== 'batch'}}">第{{week}}周 · {{type === 'companion' ? '陪伴' : '谈话'}}</text>
+    <text class="header-desc" wx:else>第1周～第{{week}}周，自动交替</text>
+  </view>
+
+  <!-- 登录区 -->
+  <view wx:if="{{loginStep !== 'done'}}" class="login-card">
+    <text class="section-title">🔐 登录管理系统</text>
+    <button wx:if="{{loginStep === 'init'}}" class="login-btn" bindtap="checkLogin" loading="{{checking}}">检测登录</button>
+
+    <!-- 图片验证码 -->
+    <block wx:if="{{loginStep === 'needCaptcha'}}">
+      <text class="login-hint">需要输入图片验证码</text>
+      <image class="captcha-img" src="{{captchaImage}}" mode="widthFix" />
+      <view class="code-row">
+        <input class="code-input" placeholder="输入验证码" value="{{captchaText}}" bindinput="onCaptchaInput" maxlength="6" />
+        <button class="code-btn" bindtap="submitCaptcha" loading="{{submitting}}">提交</button>
+      </view>
+    </block>
+
+    <!-- 认证APP 验证码 -->
+    <block wx:if="{{loginStep === 'needCode'}}">
+      <text class="login-hint">已发送验证码，打开 认证APP 查看</text>
+      <view class="code-row">
+        <input class="code-input" placeholder="6位验证码" value="{{code}}" bindinput="onCodeInput" type="number" maxlength="6" />
+        <button class="code-btn" bindtap="submitCode" loading="{{submitting}}">提交</button>
+      </view>
+      <text class="resend-link" bindtap="resendCode" wx:if="{{!resending}}">未收到？重新发送</text>
+      <text class="resend-link disabled" wx:else>重新发送中...</text>
+    </block>
+  </view>
+
+  <!-- 配置区（登录后显示） -->
+  <block wx:if="{{loginStep === 'done'}}">
+    <!-- 周次选择（非一键录入/补录，多选） -->
+    <view class="card" wx:if="{{type !== 'batch' && type !== 'fill-missing'}}">
+      <view class="section-head">
+        <text class="section-title">📅 选择周次（多选）</text>
+        <text class="toggle-all" bindtap="toggleAllWeeks">{{weekAllChecked ? '全不选' : '全选'}}</text>
+      </view>
+      <view class="week-checkbox-list">
+        <view class="week-check-row {{item.checked ? 'active' : ''}}" wx:for="{{weeks}}" wx:key="val" bindtap="toggleWeek" data-val="{{item.val}}">
+          <checkbox value="{{item.val}}" checked="{{item.checked}}" />
+          <text>第{{item.val}}周</text>
+          <text class="week-type-hint">{{item.typeHint}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 学生列表（补录模式下不需要） -->
+    <view class="card" wx:if="{{type !== 'fill-missing'}}">
+      <view class="student-header">
+        <text class="section-title">👥 学生列表</text>
+        <view class="student-header-right">
+          <text class="student-count" wx:if="{{students.length}}">已选 {{selectedCount}}/{{students.length}}</text>
+          <text class="toggle-all" wx:if="{{students.length}}" bindtap="toggleAllStudents">{{studentAllChecked ? '全不选' : '全选'}}</text>
+        </view>
+      </view>
+      <view wx:if="{{loadingStudents}}" class="loading-text">加载中...</view>
+      <view wx:elif="{{students.length === 0}}" class="empty-text">请先登录后加载学生</view>
+      <scroll-view wx:else scroll-y class="student-list" enhanced show-scrollbar="{{false}}">
+        <view class="student-row" wx:for="{{students}}" wx:key="index">
+          <checkbox value="{{item.index}}" checked="{{item._checked}}" bindtap="toggleStudent" data-index="{{item.index}}" />
+          <text class="student-name">{{item.name}}</text>
+          <text class="student-status" wx:if="{{item._hasRecord}}">已录入</text>
+        </view>
+      </scroll-view>
+      <button wx:if="{{loginStep === 'done' && students.length === 0}}" class="load-btn" bindtap="loadStudents" loading="{{loadingStudents}}">加载学生列表</button>
+    </view>
+
+    <!-- 补录说明 -->
+    <view class="card" wx:if="{{type === 'fill-missing'}}">
+      <text class="section-title">🔍 自动扫描补录</text>
+      <text style="font-size:26rpx;color:#999;">扫描第1周～当前周所有奇数周</text>
+      <text style="font-size:26rpx;color:#999;">对标记"差x次"的学生自动补录陪伴上课</text>
+      <text style="font-size:26rpx;color:#999;">跳过已有记录，只补缺失次数</text>
+    </view>
+
+    <!-- 陪伴选项 -->
+    <view class="card" wx:if="{{type === 'companion'}}">
+      <text class="section-title">📝 陪伴类型</text>
+      <view class="option-picker">
+        <view class="option-tag {{pbType === item ? 'active' : ''}}" wx:for="{{pbTypes}}" wx:key="*this" bindtap="selectPbType" data-type="{{item}}">{{item}}</view>
+      </view>
+      <text class="section-title" style="margin-top: 16rpx;">✏️ 工作内容</text>
+      <input class="content-input" placeholder="请输入工作内容" value="{{contentText}}" bindinput="onContent" />
+    </view>
+
+    <!-- 谈话选项 -->
+    <view class="card" wx:if="{{type === 'talk'}}">
+      <text class="section-title">🏠 谈话场景</text>
+      <view class="option-picker">
+        <view class="option-tag {{scene === item ? 'active' : ''}}" wx:for="{{scenes}}" wx:key="*this" bindtap="selectScene" data-scene="{{item}}">{{item}}</view>
+      </view>
+      <text class="section-title" style="margin-top: 16rpx;">✏️ 工作内容</text>
+      <input class="content-input" placeholder="请输入工作内容" value="{{contentText}}" bindinput="onContent" />
+    </view>
+
+    <!-- 开始按钮 -->
+    <button class="start-btn" bindtap="startRecord" loading="{{recording}}">
+      🚀 开始录入
+    </button>
+  </block>
+</view>

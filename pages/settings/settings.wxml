@@ -1,0 +1,36 @@
+<view class="container">
+  <!-- 账号凭证 -->
+  <view class="card">
+    <text class="card-title">🔑 账号凭证</text>
+    <text class="card-desc">用于登录管理系统</text>
+
+    <view class="form-item">
+      <text class="form-label">工号</text>
+      <input class="form-input" placeholder="请输入工号" value="{{studentId}}" bindinput="onStudentId" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">密码</text>
+      <input class="form-input" placeholder="请输入密码" value="{{password}}" bindinput="onPassword" password />
+    </view>
+
+    <button class="save-btn" bindtap="saveCredential" loading="{{saving}}">
+      💾 保存凭证
+    </button>
+    <text class="save-hint">凭证将加密存储在服务器上</text>
+  </view>
+
+  <!-- 登录状态 -->
+  <view class="card" wx:if="{{hasCredential}}">
+    <text class="card-title">✅ 凭证已配置</text>
+    <text class="card-desc">工号：{{maskedId}}</text>
+    <button class="clear-btn" bindtap="clearCredential">清除凭证</button>
+  </view>
+
+  <!-- 关于 -->
+  <view class="card">
+    <text class="card-title">ℹ️ 关于</text>
+    <text class="card-desc">批量录入助手 v1.0.0</text>
+    <text class="card-desc">高效的批量数据处理工具</text>
+  </view>
+</view>

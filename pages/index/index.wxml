@@ -1,0 +1,41 @@
+<view class="container">
+  <view class="week-card">
+    <view class="week-header">
+      <text class="week-num">第{{week}}周</text>
+      <text class="week-date">{{weekRange}}</text>
+    </view>
+    <text class="week-hint">{{isOdd ? '奇数周 → 建议录入陪伴' : '偶数周 → 建议录入谈话'}}</text>
+  </view>
+
+  <view class="entries">
+    <view class="entry-card companion" bindtap="goRecord" data-type="companion">
+      <text class="entry-icon">📝</text>
+      <text class="entry-title">录入陪伴</text>
+      <text class="entry-desc">共同进餐/上课/自习/运动</text>
+    </view>
+
+    <view class="entry-card talk" bindtap="goRecord" data-type="talk">
+      <text class="entry-icon">🏠</text>
+      <text class="entry-title">录入谈话</text>
+      <text class="entry-desc">走访寝室 / 走访课堂</text>
+    </view>
+
+    <view class="entry-card batch" bindtap="goRecord" data-type="batch">
+      <text class="entry-icon">🚀</text>
+      <text class="entry-title">一键录入</text>
+      <text class="entry-desc">第1周～当前周，自动交替</text>
+    </view>
+
+    <view class="entry-card fill-missing" bindtap="goRecord" data-type="fill-missing">
+      <text class="entry-icon">🔍</text>
+      <text class="entry-title">查询补录</text>
+      <text class="entry-desc">扫描缺失记录，一键补齐</text>
+    </view>
+  </view>
+
+  <view class="info-row" wx:if="{{!hasCredential}}">
+    <text class="info-warn">⚠️</text>
+    <text class="info-text">请先配置工号和密码</text>
+    <text class="info-link" bindtap="goSettings">去设置 →</text>
+  </view>
+</view>
