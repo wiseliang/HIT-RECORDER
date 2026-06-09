@@ -53,7 +53,15 @@ Page({
     this.setData({ checking: true })
     try {
       const res = await api.post('/api/auth/start-login', { openid: wx.getStorageSync('openid') })
-      if (res.needsCaptcha) {
+      if (res.loginFailed) {
+        // 登录卡在 authserver，展示截图帮助排查
+        this.setData({
+          loginStep: 'loginFailed',
+          loginFailedMsg: res.message,
+          loginFailedScreenshot: res.screenshot,
+          loginFailedDiag: res.diag
+        })
+      } else if (res.needsCaptcha) {
         this.setData({ loginStep: 'needCaptcha', captchaImage: res.captchaImage })
       } else if (res.needsCode) {
         this.setData({ loginStep: 'needCode' })
@@ -106,6 +114,23 @@ Page({
     const code = this.data.code.trim()
     if (code.length < 4) { wx.showToast({ title: '请输入完整验证码', icon: 'none' }); return }
     this.setData({ submitting: true })
+
+    // QR 登录的 MFA 走不同端点
+    if (this.data.isQrMfa) {
+      try {
+        const res = await api.post('/api/auth/qrcode-submit-code', { openid: wx.getStorageSync('openid'), code })
+        if (res.success) {
+          wx.showToast({ title: 'MFA 验证成功！', icon: 'success' })
+          this.setData({ loginStep: 'done', isQrMfa: false })
+        } else {
+          wx.showToast({ title: res.message || '验证失败', icon: 'none' })
+        }
+      } catch (e) {
+        wx.showModal({ title: '提交失败', content: e.message, showCancel: false })
+      } finally { this.setData({ submitting: false }) }
+      return
+    }
+
     try {
       await api.post('/api/auth/submit-code', { openid: wx.getStorageSync('openid'), code })
       wx.showToast({ title: '验证成功', icon: 'success' })
@@ -213,5 +238,88 @@ Page({
     } catch (e) {
       wx.showModal({ title: '创建失败', content: e.message, showCancel: false })
     } finally { this.setData({ recording: false }) }
+  },
+
+  // ===== 二维码登录 =====
+  async startQrLogin() {
+    this.setData({ checking: true })
+    try {
+      const res = await api.post('/api/auth/qrcode-start', { openid: wx.getStorageSync('openid') })
+      if (res.loggedIn) {
+        // session 有效，SSO 自动跳过，直接登录成功
+        wx.showToast({ title: '已登录，无需扫码', icon: 'success' })
+        this.setData({ loginStep: 'done' })
+      } else if (res.hasQrCode) {
+        this.setData({ loginStep: 'qrcode', qrcodeImage: res.qrcode, qrMessage: res.message })
+      } else if (res.needsMfa) {
+        this.setData({ loginStep: 'needCode', code: '', isQrMfa: true })
+      } else {
+        wx.showToast({ title: res.message || '获取二维码失败', icon: 'none' })
+      }
+    } catch (e) {
+      wx.showModal({ title: '获取二维码失败', content: e.message, showCancel: false })
+    } finally { this.setData({ checking: false }) }
+  },
+
+  saveQrcode() {
+    if (!this.data.qrcodeImage) return
+    wx.getImageInfo({
+      src: this.data.qrcodeImage,
+      success: (imgInfo) => {
+        wx.saveImageToPhotosAlbum({
+          filePath: imgInfo.path,
+          success: () => wx.showToast({ title: '已保存到相册', icon: 'success' }),
+          fail: () => wx.showToast({ title: '保存失败，请长按图片保存', icon: 'none' })
+        })
+      },
+      fail: () => wx.showToast({ title: '请长按二维码图片保存', icon: 'none' })
+    })
+  },
+
+  async checkQrLogin() {
+    this.setData({ checkingQr: true })
+    try {
+      const res = await api.post('/api/auth/qrcode-wait', { openid: wx.getStorageSync('openid') })
+      if (res.loggedIn) {
+        wx.showToast({ title: '扫码登录成功！', icon: 'success' })
+        this.setData({ loginStep: 'done' })
+      }
+      // 扫码成功但需要 MFA 验证码
+      else if (res.needsMfa) {
+        this.setData({ loginStep: 'needCode', code: '', isQrMfa: true })
+      }
+      else {
+        wx.showToast({ title: '尚未扫码，请扫描后再试', icon: 'none' })
+      }
+    } catch (e) {
+      wx.showModal({ title: '验证失败', content: e.message, showCancel: false })
+    } finally { this.setData({ checkingQr: false }) }
+  },
+
+  async submitQrMfaCode() {
+    const code = this.data.code.trim()
+    if (code.length < 4) { wx.showToast({ title: '请输入完整验证码', icon: 'none' }); return }
+    this.setData({ submitting: true })
+    try {
+      const res = await api.post('/api/auth/qrcode-submit-code', { openid: wx.getStorageSync('openid'), code })
+      if (res.success) {
+        wx.showToast({ title: 'MFA 验证成功！', icon: 'success' })
+        this.setData({ loginStep: 'done' })
+      } else {
+        wx.showToast({ title: res.message || '验证失败', icon: 'none' })
+      }
+    } catch (e) {
+      wx.showModal({ title: '提交失败', content: e.message, showCancel: false })
+    } finally { this.setData({ submitting: false }) }
+  },
+
+  async testQrScreenshot() {
+    this.setData({ testingQr: true })
+    try {
+      const res = await api.post('/api/auth/qrcode-screenshot', { openid: wx.getStorageSync('openid') })
+      this.setData({ testScreenshot: res.screenshot, testDiag: res.diag })
+    } catch (e) {
+      wx.showToast({ title: e.message || '截图失败', icon: 'none' })
+    } finally { this.setData({ testingQr: false }) }
   }
 })

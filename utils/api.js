@@ -1,4 +1,4 @@
-const BASE_URL = 'https://43.143.235.124'
+const BASE_URL = 'https://118.190.208.230'
 
 function request(method, path, data) {
   const openid = wx.getStorageSync('openid')

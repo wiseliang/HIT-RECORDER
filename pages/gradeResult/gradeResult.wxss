@@ -1,0 +1,190 @@
+.container { padding: 24rpx; padding-bottom: 120rpx; }
+
+/* 等待验证码 */
+.await-section {
+  width: 100%;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 40rpx 24rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+  margin-top: 40rpx;
+}
+.await-icon { font-size: 64rpx; display: block; margin-bottom: 16rpx; }
+.await-title { font-size: 32rpx; font-weight: 600; display: block; margin-bottom: 8rpx; }
+.await-hint { font-size: 24rpx; color: #999; display: block; margin-bottom: 24rpx; }
+.captcha-img { width: 300rpx; display: block; margin: 12rpx auto; border-radius: 8rpx; border: 1rpx solid #eee; }
+.code-row { display: flex; gap: 12rpx; }
+.code-input {
+  flex: 1; height: 80rpx; background: #F5F7FA; border-radius: 12rpx;
+  padding: 0 20rpx; font-size: 32rpx; letter-spacing: 6rpx;
+}
+.code-btn {
+  width: 160rpx; height: 80rpx; line-height: 80rpx;
+  background: #1B62A5; color: #fff; font-size: 28rpx; border-radius: 12rpx; border: none;
+}
+
+/* 执行状态 */
+.status-area {
+  display: flex; flex-direction: column; align-items: center;
+  margin: 60rpx 0 32rpx;
+}
+.status-icon { font-size: 64rpx; margin-bottom: 12rpx; }
+.status-title { font-size: 32rpx; font-weight: 600; margin-bottom: 8rpx; }
+.status-phase { font-size: 24rpx; color: #999; }
+
+.progress-wrap {
+  background: #fff; border-radius: 20rpx; padding: 24rpx;
+  margin-bottom: 24rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+.progress-bar {
+  width: 100%; height: 16rpx; background: #E8E8E8;
+  border-radius: 8rpx; overflow: hidden; margin-bottom: 12rpx;
+}
+.progress-fill {
+  height: 100%; background: linear-gradient(90deg, #722ED1, #9254DE);
+  border-radius: 8rpx; transition: width 0.6s ease;
+}
+.progress-text { display: block; text-align: center; font-size: 26rpx; color: #666; }
+.hint { display: block; text-align: center; font-size: 24rpx; color: #ccc; margin-top: 20rpx; }
+
+/* 统计卡片 */
+.summary-card {
+  background: #fff; border-radius: 20rpx; padding: 28rpx 24rpx;
+  margin-bottom: 20rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+  text-align: center;
+}
+.summary-icon { font-size: 48rpx; display: block; margin-bottom: 8rpx; }
+.summary-title { font-size: 30rpx; font-weight: 600; display: block; margin-bottom: 16rpx; }
+.summary-grid { display: flex; gap: 12rpx; }
+.sg-item { flex: 1; }
+.sg-val { font-size: 40rpx; font-weight: bold; color: #1B62A5; display: block; }
+.sg-val.warn { color: #FF4D4F; }
+.sg-label { font-size: 22rpx; color: #999; }
+
+/* 标签 */
+.tab-bar {
+  display: flex;
+  background: #fff; border-radius: 12rpx; margin-bottom: 16rpx;
+  overflow: hidden; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.tab-item {
+  flex: 1; text-align: center; padding: 20rpx 0;
+  font-size: 26rpx; color: #999;
+}
+.tab-item.active {
+  color: #1B62A5; font-weight: 600;
+  border-bottom: 4rpx solid #1B62A5;
+}
+
+/* 学生列表表头 */
+.table-header {
+  display: flex; align-items: center;
+  background: #F5F7FA; padding: 16rpx 12rpx; border-radius: 8rpx 8rpx 0 0;
+}
+.table-row {
+  display: flex; align-items: center;
+  background: #fff; padding: 16rpx 12rpx;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+.table-row:active { background: #F5F7FA; }
+.table-row.expanded { background: #F0F7FF; }
+
+.th, .td { font-size: 24rpx; }
+.th-idx, .td-idx { width: 40rpx; text-align: center; color: #999; }
+.th-id, .td-id { flex: 1; }
+.th-name, .td-name { flex: 0.8; }
+.th-gpa, .td-gpa { width: 80rpx; text-align: center; }
+.th-fail, .td-fail { width: 70rpx; text-align: center; }
+.td-fail.fail { color: #FF4D4F; font-weight: 600; }
+
+.student-scroll { max-height: 600rpx; }
+.student-list-wrap { margin-bottom: 16rpx; }
+
+/* 课程详情 */
+.course-detail {
+  background: #F0F7FF; border-radius: 12rpx; padding: 16rpx 12rpx;
+  margin-top: 8rpx; margin-bottom: 16rpx;
+}
+.cd-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12rpx; }
+.cd-title { font-size: 26rpx; font-weight: 600; color: #1B62A5; }
+.cd-close { font-size: 28rpx; color: #999; padding: 4rpx 12rpx; }
+.cd-loading, .cd-empty { text-align: center; font-size: 24rpx; color: #999; padding: 20rpx; }
+
+/* 课程表头 */
+.course-header {
+  display: flex; align-items: center;
+  background: #E6F0FA; padding: 12rpx 8rpx; border-radius: 6rpx;
+}
+.course-row {
+  display: flex; align-items: center; padding: 12rpx 8rpx;
+  border-bottom: 1rpx solid #EBF3FC;
+}
+.ch, .cr { font-size: 22rpx; }
+.ch-sem, .cr-sem { width: 120rpx; }
+.ch-name, .cr-name { flex: 1.5; }
+.ch-nature, .cr-nature { width: 80rpx; }
+.ch-credit, .cr-credit { width: 60rpx; text-align: center; }
+.ch-mark, .cr-mark { width: 70rpx; text-align: center; }
+.ch-score, .cr-score { width: 60rpx; text-align: center; }
+.mark-yes { color: #FF4D4F; font-weight: 600; }
+
+/* 课程总览 */
+.courses-overview { margin-bottom: 16rpx; }
+.overview-hint { font-size: 22rpx; color: #999; display: block; margin-bottom: 12rpx; }
+.course-status-list { background: #fff; border-radius: 12rpx; overflow: hidden; }
+.cs-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16rpx 20rpx; border-bottom: 1rpx solid #F5F5F5;
+}
+.cs-name { font-size: 28rpx; }
+.cs-count { font-size: 24rpx; color: #52C41A; }
+
+/* 导出 */
+.export-section { display: flex; gap: 12rpx; margin-bottom: 16rpx; }
+.export-btn {
+  flex: 1; height: 80rpx; line-height: 80rpx;
+  background: #F5F7FA; color: #1B62A5; font-size: 26rpx;
+  border-radius: 12rpx; border: none; text-align: center;
+}
+.export-btn.csv { background: #E6F7E6; color: #52C41A; }
+
+.home-btn {
+  width: 100%; height: 88rpx; line-height: 88rpx;
+  background: #1B62A5; color: #fff; font-size: 30rpx;
+  border-radius: 44rpx; border: none; text-align: center;
+}
+.empty-text { text-align: center; font-size: 26rpx; color: #999; padding: 40rpx 0; }
+
+/* 诊断 */
+.diag-btn {
+  width: 100%; height: 72rpx; line-height: 72rpx;
+  background: #FFF3E0; color: #E65100; font-size: 26rpx;
+  border-radius: 12rpx; border: none; margin-top: 16rpx;
+}
+.diag-card {
+  width: 100%; background: #fff; border-radius: 16rpx;
+  padding: 24rpx; margin-top: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+.diag-title { font-size: 30rpx; font-weight: 600; display: block; margin-bottom: 16rpx; }
+.diag-label { font-size: 22rpx; color: #999; display: block; margin-top: 12rpx; }
+.diag-label.error { color: #FF4D4F; }
+.diag-val { font-size: 24rpx; color: #333; display: block; word-break: break-all; }
+.diag-val.small { font-size: 20rpx; color: #666; }
+.diag-val.error { color: #FF4D4F; }
+.diag-body {
+  font-size: 22rpx; color: #666; display: block;
+  background: #F5F7FA; border-radius: 8rpx; padding: 12rpx;
+  max-height: 300rpx; overflow-y: auto; word-break: break-all;
+  white-space: pre-wrap;
+}
+.diag-tag {
+  display: inline-block; font-size: 22rpx; color: #1B62A5;
+  background: #F0F7FF; border-radius: 6rpx; padding: 4rpx 12rpx;
+  margin: 4rpx;
+}
+.diag-screenshot {
+  width: 100%; margin-top: 16rpx; border-radius: 8rpx;
+  border: 1rpx solid #eee;
+}

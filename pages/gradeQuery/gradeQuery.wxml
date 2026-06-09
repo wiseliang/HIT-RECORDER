@@ -1,0 +1,91 @@
+<view class="container">
+  <view class="header">
+    <text class="header-title">📊 学生成绩查询</text>
+    <text class="header-desc">班主任导员成绩查询与导出</text>
+  </view>
+
+  <!-- 登录区 -->
+  <view wx:if="{{loginStep !== 'done'}}" class="login-card">
+    <text class="section-title">🔐 登录管理系统</text>
+    <button wx:if="{{loginStep === 'init'}}" class="login-btn" bindtap="checkLogin" loading="{{checking}}">密码登录</button>
+    <button wx:if="{{loginStep === 'init'}}" class="login-btn qrcode" bindtap="startQrLogin" loading="{{qrLoading}}">📱 二维码登录</button>
+
+    <!-- 图片验证码 -->
+    <block wx:if="{{loginStep === 'needCaptcha'}}">
+      <text class="login-hint">需要输入图片验证码</text>
+      <image class="captcha-img" src="{{captchaImage}}" mode="widthFix" />
+      <view class="code-row">
+        <input class="code-input" placeholder="输入验证码" value="{{captchaText}}" bindinput="onCaptchaInput" maxlength="6" />
+        <button class="code-btn" bindtap="submitCaptcha" loading="{{submitting}}">提交</button>
+      </view>
+    </block>
+
+    <!-- 二维码 -->
+    <block wx:if="{{loginStep === 'qrcode'}}">
+      <text class="login-hint">{{qrMessage || '请用 HIT APP 扫描二维码'}}</text>
+      <image wx:if="{{qrcodeImage}}" class="captcha-img" src="{{qrcodeImage}}" mode="widthFix" show-menu-by-longpress="{{true}}" />
+      <text class="resend-link" bindtap="saveQrcode">💾 保存二维码到相册</text>
+      <button class="code-btn" bindtap="checkQrLogin" loading="{{checkingQr}}" style="width:100%;margin-top:16rpx;">🔄 已完成扫码</button>
+      <button class="code-btn" bindtap="testQrScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:8rpx;background:#666;">📸 截图诊断</button>
+      <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
+      <text wx:if="{{testDiag}}" class="diag-text">URL: {{testDiag.url}}</text>
+      <text wx:if="{{testDiag}}" class="diag-text">Body: {{testDiag.bodyText}}</text>
+      <text class="resend-link" bindtap="checkLogin">返回密码登录</text>
+    </block>
+
+    <!-- MFA 验证码 -->
+    <block wx:if="{{loginStep === 'needCode'}}">
+      <text class="login-hint">已发送验证码，打开 认证APP 查看</text>
+      <view class="code-row">
+        <input class="code-input" placeholder="6位验证码" value="{{code}}" bindinput="onCodeInput" type="number" maxlength="6" />
+        <button class="code-btn" bindtap="submitGradeMfa" loading="{{submitting}}">提交</button>
+      </view>
+      <button class="code-btn" bindtap="testQrScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:8rpx;background:#666;">📸 截图诊断</button>
+      <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
+    </block>
+  </view>
+
+  <!-- 查询表单（登录后显示）-->
+  <block wx:if="{{loginStep === 'done'}}">
+    <view class="card">
+      <text class="section-title">📋 查询条件</text>
+      <view class="form-item">
+        <text class="form-label">年级</text>
+        <picker mode="selector" range="{{years}}" value="{{selectedYear}}" bindchange="onYearChange">
+          <view class="picker-value">{{years[selectedYear]}}</view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">院系</text>
+        <picker mode="selector" range="{{schools}}" value="{{selectedSchool}}" bindchange="onSchoolChange">
+          <view class="picker-value">{{schools[selectedSchool]}}</view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">专业</text>
+        <picker mode="selector" range="{{majors}}" value="{{selectedMajor}}" bindchange="onMajorChange">
+          <view class="picker-value">{{majors[selectedMajor]}}</view>
+        </picker>
+      </view>
+      <view class="form-item toggle-row">
+        <text class="form-label">提取每个学生的课程详情</text>
+        <switch checked="{{extractCourses}}" bindchange="toggleExtractCourses" color="#1B62A5" />
+      </view>
+      <text class="toggle-hint" wx:if="{{extractCourses}}">⚠️ 课程提取耗时较长（约 3秒/学生）</text>
+    </view>
+
+    <view class="card info-card">
+      <text class="section-title">ℹ️ 自动化流程</text>
+      <text class="info-text">1. 登录 ivpn → SSO → 进入新教务平台</text>
+      <text class="info-text">2. 导航至班主任导员成绩查询页面</text>
+      <text class="info-text">3. 筛选条件并提取所有学生数据</text>
+      <text class="info-text" wx:if="{{extractCourses}}">4. 逐条提取课程详细成绩</text>
+    </view>
+
+    <button class="start-btn" bindtap="startQuery" loading="{{querying}}">🔍 开始查询</button>
+
+    <button class="code-btn" bindtap="testQrScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:16rpx;background:#666;">📸 截图诊断（查看浏览器状态）</button>
+    <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
+    <text wx:if="{{testDiag}}" class="diag-text">URL: {{testDiag.url}}</text>
+  </block>
+</view>

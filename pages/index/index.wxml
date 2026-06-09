@@ -31,6 +31,12 @@
       <text class="entry-title">查询补录</text>
       <text class="entry-desc">扫描缺失记录，一键补齐</text>
     </view>
+
+    <view class="entry-card grade" bindtap="goGradeQuery">
+      <text class="entry-icon">📊</text>
+      <text class="entry-title">成绩查询</text>
+      <text class="entry-desc">班主任导员成绩查询与导出</text>
+    </view>
   </view>
 
   <view class="info-row" wx:if="{{!hasCredential}}">

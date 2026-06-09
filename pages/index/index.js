@@ -28,6 +28,14 @@ Page({
     wx.navigateTo({ url: `/pages/record/record?type=${type}&week=${this.data.week}` })
   },
 
+  goGradeQuery() {
+    if (!this.data.hasCredential) {
+      wx.showToast({ title: '请先配置凭证', icon: 'none' })
+      return
+    }
+    wx.navigateTo({ url: '/pages/gradeQuery/gradeQuery' })
+  },
+
   goSettings() {
     wx.switchTab({ url: '/pages/settings/settings' })
   }

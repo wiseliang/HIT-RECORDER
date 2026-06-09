@@ -129,3 +129,36 @@
   border-radius: 12rpx;
   border: none;
 }
+
+/* 重发链接 */
+.resend-link {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: #1B62A5;
+}
+.resend-link.disabled {
+  color: #ccc;
+}
+
+/* 验证码图片 */
+.captcha-img {
+  width: 100%;
+  max-width: 500rpx;
+  margin: 16rpx auto;
+  border-radius: 8rpx;
+  border: 1px solid #eee;
+}
+
+/* 网络错误横幅 */
+.error-banner {
+  width: 100%;
+  background: #FFF3E0;
+  border-radius: 12rpx;
+  padding: 16rpx 24rpx;
+  margin-bottom: 24rpx;
+}
+.error-banner text {
+  font-size: 26rpx;
+  color: #E65100;
+}

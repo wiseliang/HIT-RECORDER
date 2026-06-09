@@ -9,7 +9,31 @@
   <!-- 登录区 -->
   <view wx:if="{{loginStep !== 'done'}}" class="login-card">
     <text class="section-title">🔐 登录管理系统</text>
-    <button wx:if="{{loginStep === 'init'}}" class="login-btn" bindtap="checkLogin" loading="{{checking}}">检测登录</button>
+    <button wx:if="{{loginStep === 'init'}}" class="login-btn" bindtap="checkLogin" loading="{{checking}}">密码登录</button>
+    <button wx:if="{{loginStep === 'init'}}" class="login-btn qrcode" bindtap="startQrLogin" loading="{{checking}}">📱 二维码登录</button>
+
+    <!-- 二维码登录 -->
+    <block wx:if="{{loginStep === 'qrcode'}}">
+      <text class="login-hint">{{qrMessage || '请使用 HIT APP 扫描二维码'}}</text>
+      <image wx:if="{{qrcodeImage}}" class="captcha-img" src="{{qrcodeImage}}" mode="widthFix" show-menu-by-longpress="{{true}}" />
+      <text class="resend-link" bindtap="saveQrcode">💾 长按图片保存到相册</text>
+      <button class="code-btn" bindtap="checkQrLogin" loading="{{checkingQr}}" style="width:100%;margin-top:16rpx;">🔄 已完成扫码，验证登录</button>
+      <button class="code-btn" bindtap="testQrScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:8rpx;background:#666;">📸 测试：查看当前页面截图</button>
+      <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
+      <text wx:if="{{testDiag}}" class="diag-text" style="font-size:22rpx;">URL: {{testDiag.url}}</text>
+      <text wx:if="{{testDiag}}" class="diag-text" style="font-size:22rpx;">QR可见: {{testDiag.qrVisible}}, 成功图标: {{testDiag.successVisible}}</text>
+      <text wx:if="{{testDiag}}" class="diag-text" style="font-size:22rpx;">页面文字: {{testDiag.bodyText}}</text>
+      <text class="resend-link" bindtap="checkLogin">返回密码登录</text>
+    </block>
+
+    <!-- 登录失败 / 卡在认证页 -->
+    <block wx:if="{{loginStep === 'loginFailed'}}">
+      <text class="login-hint" style="color:#FF4D4F;">❌ {{loginFailedMsg}}</text>
+      <image wx:if="{{loginFailedScreenshot}}" class="captcha-img" src="{{loginFailedScreenshot}}" mode="widthFix" />
+      <text wx:if="{{loginFailedDiag}}" class="diag-text">URL: {{loginFailedDiag.url}}</text>
+      <text wx:if="{{loginFailedDiag}}" class="diag-text">Body: {{loginFailedDiag.bodyText}}</text>
+      <button class="login-btn" bindtap="checkLogin" loading="{{checking}}">重试登录</button>
+    </block>
 
     <!-- 图片验证码 -->
     <block wx:if="{{loginStep === 'needCaptcha'}}">
@@ -30,6 +54,10 @@
       </view>
       <text class="resend-link" bindtap="resendCode" wx:if="{{!resending}}">未收到？重新发送</text>
       <text class="resend-link disabled" wx:else>重新发送中...</text>
+      <button class="code-btn" bindtap="testQrScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:12rpx;background:#666;">📸 截图诊断</button>
+      <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
+      <text wx:if="{{testDiag}}" class="diag-text">URL: {{testDiag.url}}</text>
+      <text wx:if="{{testDiag}}" class="diag-text">Body: {{testDiag.bodyText}}</text>
     </block>
   </view>
 
@@ -103,5 +131,11 @@
     <button class="start-btn" bindtap="startRecord" loading="{{recording}}">
       🚀 开始录入
     </button>
+
+    <!-- 截图诊断 -->
+    <button class="code-btn" bindtap="testQrScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:16rpx;background:#666;">📸 截图诊断（查看浏览器状态）</button>
+    <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
+    <text wx:if="{{testDiag}}" class="diag-text">URL: {{testDiag.url}}</text>
+    <text wx:if="{{testDiag}}" class="diag-text">Body: {{testDiag.bodyText}}</text>
   </block>
 </view>

@@ -1,17 +1,41 @@
 <view class="container">
+  <!-- 网络错误提示 -->
+  <view wx:if="{{fetchError}}" class="error-banner">
+    <text>{{fetchError}}</text>
+  </view>
+
   <!-- 等待验证码 -->
   <view wx:if="{{status === 'awaiting_code'}}" class="await-section">
-    <text class="await-icon">🔐</text>
-    <text class="await-title">需要认证APP验证码</text>
-    <text class="await-hint">打开 认证APP → 我的 → 动态口令</text>
-    <view class="code-row">
-      <input class="code-input" placeholder="输入验证码" value="{{code}}" bindinput="onCodeInput" type="number" maxlength="6" />
-      <button class="code-btn" bindtap="submitCode" loading="{{submitting}}">提交</button>
-    </view>
+    <!-- 图片验证码 -->
+    <block wx:if="{{needsCaptcha}}">
+      <text class="await-icon">🖼️</text>
+      <text class="await-title">需要输入图片验证码</text>
+      <image class="captcha-img" src="{{captchaImage}}" mode="widthFix" wx:if="{{captchaImage}}" />
+      <view class="code-row">
+        <input class="code-input" placeholder="输入验证码" value="{{code}}" bindinput="onCodeInput" maxlength="6" />
+        <button class="code-btn" bindtap="submitCode" loading="{{submitting}}">提交</button>
+      </view>
+    </block>
+    <!-- MFA 验证码 -->
+    <block wx:else>
+      <text class="await-icon">🔐</text>
+      <text class="await-title">需要认证APP验证码</text>
+      <text class="await-hint">打开 认证APP → 我的 → 动态口令</text>
+      <view class="code-row">
+        <input class="code-input" placeholder="输入验证码" value="{{code}}" bindinput="onCodeInput" type="number" maxlength="6" />
+        <button class="code-btn" bindtap="submitCode" loading="{{submitting}}">提交</button>
+      </view>
+      <text class="resend-link" bindtap="resendCode" wx:if="{{!resending}}">未收到？重新发送</text>
+      <text class="resend-link disabled" wx:else>重新发送中...</text>
+    </block>
+    <button class="code-btn" bindtap="testScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:12rpx;background:#666;">📸 截图诊断</button>
+    <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
+    <text wx:if="{{testDiag}}" class="diag-text">URL: {{testDiag.url}}</text>
+    <text wx:if="{{testDiag}}" class="diag-text">Body: {{testDiag.bodyText}}</text>
   </view>
 
   <!-- 正常运行中 -->
-  <block wx:else>
+  <block wx:elif="{{status !== 'awaiting_code'}}">
     <text class="status-text">
       {{status === 'completed' ? '✅ 录入完成' : status === 'failed' ? '❌ 录入失败' : '📡 执行中...'}}
     </text>

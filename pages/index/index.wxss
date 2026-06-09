@@ -28,6 +28,7 @@
 .entry-card.talk { border-left-color: #E8A838; }
 .entry-card.batch { border-left-color: #52C41A; }
 .entry-card.fill-missing { border-left-color: #FF4D4F; }
+.entry-card.grade { border-left-color: #722ED1; }
 .entry-icon { font-size: 40rpx; margin-bottom: 6rpx; }
 .entry-title { font-size: 32rpx; font-weight: 600; margin-bottom: 4rpx; }
 .entry-desc { font-size: 24rpx; color: #999; }

@@ -1,0 +1,173 @@
+<view class="container">
+  <!-- 等待验证码 -->
+  <view wx:if="{{needsCaptcha || status === 'awaiting_code'}}" class="await-section">
+    <text class="await-icon">🔐</text>
+    <text class="await-title">需要验证码</text>
+    <text class="await-hint">{{currentPhase || '请输入验证码'}}</text>
+    <image wx:if="{{captchaImage}}" class="captcha-img" src="{{captchaImage}}" mode="widthFix" />
+    <view class="code-row">
+      <input class="code-input" placeholder="{{needsCaptcha ? '输入图片验证码' : '输入HIT APP验证码'}}" value="{{code}}" bindinput="onCodeInput" maxlength="6" />
+      <button class="code-btn" bindtap="submitCaptchaOrCode" loading="{{submitting}}">提交</button>
+    </view>
+    <button class="code-btn" bindtap="testScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:12rpx;background:#666;">📸 截图诊断</button>
+    <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
+    <text wx:if="{{testDiag}}" class="diag-text">URL: {{testDiag.url}}</text>
+  </view>
+
+  <!-- 执行中 -->
+  <block wx:elif="{{status === 'running' || status === 'logging_in' || status === 'navigating' || status === 'querying' || status === 'extracting_courses' || status === 'pending'}}">
+    <view class="status-area">
+      <text class="status-icon">⏳</text>
+      <text class="status-title">查询执行中</text>
+      <text class="status-phase">{{currentPhase || '正在初始化...'}}</text>
+    </view>
+
+    <view class="progress-wrap">
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{status === 'extracting_courses' ? (studentCount > 0 ? courseProgress / studentCount * 100 : 0) : 50}}%"></view>
+      </view>
+      <text class="progress-text" wx:if="{{studentCount > 0}}">
+        {{status === 'extracting_courses' ? '课程提取: ' + courseProgress + '/' + studentCount : '学生数: ' + studentCount}}
+      </text>
+    </view>
+
+    <text class="hint">可关闭本页，后台继续执行</text>
+
+    <!-- 诊断按钮 -->
+    <button class="diag-btn" bindtap="runDiagnose" loading="{{diagnosing}}">🔍 诊断页面（查看服务端浏览器状态）</button>
+
+    <!-- 诊断结果 -->
+    <view wx:if="{{diagResult}}" class="diag-card">
+      <text class="diag-title">📋 诊断结果</text>
+      <text class="diag-label">服务端当前步骤：</text>
+      <text class="diag-val">{{diagResult.debugStep || '-'}}</text>
+      <text class="diag-label">当前 URL：</text>
+      <text class="diag-val small">{{diagResult.url || '-'}}</text>
+      <text class="diag-label">页面标题：</text>
+      <text class="diag-val">{{diagResult.title || '-'}}</text>
+      <text class="diag-label">页面内容摘要：</text>
+      <text class="diag-body">{{diagResult.bodySnippet || '-'}}</text>
+      <text wx:if="{{diagResult.visibleButtons && diagResult.visibleButtons.length}}" class="diag-label">可见按钮：</text>
+      <text wx:for="{{diagResult.visibleButtons}}" wx:key="*this" class="diag-tag">{{item}}</text>
+      <text wx:if="{{diagResult.pageError}}" class="diag-label error">页面错误：</text>
+      <text wx:if="{{diagResult.pageError}}" class="diag-val error">{{diagResult.pageError}}</text>
+      <image wx:if="{{diagResult.screenshot}}" class="diag-screenshot" src="{{diagResult.screenshot}}" mode="widthFix" />
+    </view>
+  </block>
+
+  <!-- 失败 -->
+  <block wx:elif="{{status === 'failed'}}">
+    <view class="status-area">
+      <text class="status-icon">❌</text>
+      <text class="status-title">查询失败</text>
+      <text class="status-phase">{{currentPhase || '未知错误'}}</text>
+    </view>
+    <button class="home-btn" bindtap="goHome">返回首页</button>
+  </block>
+
+  <!-- 完成 -->
+  <block wx:elif="{{status === 'completed'}}">
+    <!-- 统计卡片 -->
+    <view class="summary-card">
+      <text class="summary-icon">📊</text>
+      <text class="summary-title">{{school}} {{major}} {{year}}级</text>
+      <view class="summary-grid">
+        <view class="sg-item">
+          <text class="sg-val">{{studentCount}}</text>
+          <text class="sg-label">总人数</text>
+        </view>
+        <view class="sg-item">
+          <text class="sg-val">{{avgGpa || '-'}}</text>
+          <text class="sg-label">平均学分绩</text>
+        </view>
+        <view class="sg-item">
+          <text class="sg-val warn">{{totalFailed}}</text>
+          <text class="sg-label">不及格人(门)数</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 标签切换 -->
+    <view class="tab-bar">
+      <view class="tab-item {{activeTab === 'students' ? 'active' : ''}}" bindtap="switchTab" data-tab="students">
+        <text>📋 学生列表</text>
+      </view>
+      <view class="tab-item {{activeTab === 'courses' ? 'active' : ''}}" bindtap="switchTab" data-tab="courses">
+        <text>📚 {{summary.coursesExtractedCount || 0}}人课程已提取</text>
+      </view>
+    </view>
+
+    <!-- 学生列表 -->
+    <view wx:if="{{activeTab === 'students'}}" class="student-list-wrap">
+      <view class="table-header">
+        <text class="th th-idx">#</text>
+        <text class="th th-id">学号</text>
+        <text class="th th-name">姓名</text>
+        <text class="th th-gpa">学分绩</text>
+        <text class="th th-fail">不及格</text>
+      </view>
+      <scroll-view scroll-y class="student-scroll" enhanced show-scrollbar="{{false}}">
+        <view class="table-row {{expandedIndex === index ? 'expanded' : ''}}" wx:for="{{students}}" wx:key="studentId" bindtap="toggleStudentCourses" data-index="{{index}}">
+          <text class="td td-idx">{{index + 1}}</text>
+          <text class="td td-id">{{item.studentId}}</text>
+          <text class="td td-name">{{item.name}}</text>
+          <text class="td td-gpa">{{item.gpa || '-'}}</text>
+          <text class="td td-fail {{item.failedCount > 0 ? 'fail' : ''}}">{{item.failedCount}}</text>
+        </view>
+      </scroll-view>
+
+      <!-- 展开的课程详情 -->
+      <view wx:if="{{expandedIndex >= 0}}" class="course-detail">
+        <view class="cd-header">
+          <text class="cd-title">▼ {{currentStudentName}} 课程详情</text>
+          <text class="cd-close" bindtap="toggleStudentCourses" data-index="{{-1}}">✕</text>
+        </view>
+
+        <view wx:if="{{loadingCourses}}" class="cd-loading">加载中...</view>
+
+        <view wx:elif="{{currentCourses.length > 0}}">
+          <view class="course-header">
+            <text class="ch ch-sem">学期</text>
+            <text class="ch ch-name">课程名称</text>
+            <text class="ch ch-nature">性质</text>
+            <text class="ch ch-credit">学分</text>
+            <text class="ch ch-mark">补考</text>
+            <text class="ch ch-score">成绩</text>
+          </view>
+          <view class="course-row" wx:for="{{currentCourses}}" wx:key="courseName">
+            <text class="cr cr-sem">{{item.semester}}</text>
+            <text class="cr cr-name">{{item.courseName}}</text>
+            <text class="cr cr-nature">{{item.nature}}</text>
+            <text class="cr cr-credit">{{item.credits}}</text>
+            <text class="cr cr-mark {{item.retakeMark ? 'mark-yes' : ''}}">{{item.retakeMark || '-'}}</text>
+            <text class="cr cr-score">{{item.totalScore}}</text>
+          </view>
+        </view>
+
+        <view wx:else class="cd-empty">暂未提取课程数据</view>
+      </view>
+    </view>
+
+    <!-- 课程总览 -->
+    <view wx:if="{{activeTab === 'courses'}}" class="courses-overview">
+      <block wx:if="{{students.length > 0}}">
+        <text class="overview-hint">已提取课程的学生将显示绿色标记</text>
+        <view class="course-status-list">
+          <view class="cs-row" wx:for="{{students}}" wx:key="studentId">
+            <text class="cs-name">{{item.name}}</text>
+            <text class="cs-count">{{item.coursesExtracted ? '✅ ' + item.courseCount + '门' : '⏳ 待提取'}}</text>
+          </view>
+        </view>
+      </block>
+      <view wx:else class="empty-text">暂未提取课程数据</view>
+    </view>
+
+    <!-- 导出按钮 -->
+    <view class="export-section">
+      <button class="export-btn" bindtap="copyToClipboard">📋 复制表格数据</button>
+      <button class="export-btn csv" bindtap="copyCsv">📊 复制CSV（Excel可用）</button>
+    </view>
+
+    <button class="home-btn" bindtap="goHome">🏠 返回首页</button>
+  </block>
+</view>

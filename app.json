@@ -5,7 +5,9 @@
     "pages/progress/progress",
     "pages/result/result",
     "pages/settings/settings",
-    "pages/history/history"
+    "pages/history/history",
+    "pages/gradeQuery/gradeQuery",
+    "pages/gradeResult/gradeResult"
   ],
   "window": {
     "navigationBarTitleText": "批量录入助手",
