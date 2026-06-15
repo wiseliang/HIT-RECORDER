@@ -26,18 +26,15 @@
       <image wx:if="{{qrcodeImage}}" class="captcha-img" src="{{qrcodeImage}}" mode="widthFix" show-menu-by-longpress="{{true}}" />
       <text class="resend-link" bindtap="saveQrcode">💾 保存二维码到相册</text>
       <button class="code-btn" bindtap="checkQrLogin" loading="{{checkingQr}}" style="width:100%;margin-top:16rpx;">🔄 已完成扫码</button>
-      <button class="code-btn" bindtap="testQrScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:8rpx;background:#666;">📸 截图诊断</button>
-      <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
-      <text wx:if="{{testDiag}}" class="diag-text">URL: {{testDiag.url}}</text>
-      <text wx:if="{{testDiag}}" class="diag-text">Body: {{testDiag.bodyText}}</text>
+      <!-- 截图诊断已隐藏 -->
       <text class="resend-link" bindtap="checkLogin">返回密码登录</text>
     </block>
 
-    <!-- MFA 验证码 -->
+    <!-- MFA 验证码（短信验证码） -->
     <block wx:if="{{loginStep === 'needCode'}}">
-      <text class="login-hint">已发送验证码，打开 认证APP 查看</text>
+      <text class="login-hint">已发送验证码，请查看 HIT APP 或手机短信</text>
       <view class="code-row">
-        <input class="code-input" placeholder="6位验证码" value="{{code}}" bindinput="onCodeInput" type="number" maxlength="6" />
+        <input class="code-input" placeholder="输入验证码" value="{{code}}" bindinput="onCodeInput" type="number" maxlength="6" />
         <button class="code-btn" bindtap="submitGradeMfa" loading="{{submitting}}">提交</button>
       </view>
       <button class="code-btn" bindtap="testQrScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:8rpx;background:#666;">📸 截图诊断</button>

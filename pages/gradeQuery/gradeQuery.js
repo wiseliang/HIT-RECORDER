@@ -35,28 +35,41 @@ Page({
   onMajorChange(e) { this.setData({ selectedMajor: parseInt(e.detail.value) }) },
   toggleExtractCourses() { this.setData({ extractCourses: !this.data.extractCourses }) },
 
-  // ===== 密码登录 =====
+  // ===== 密码登录（成绩查询专用，走完整 ivpn 登录链） =====
   async checkLogin() {
     this.setData({ checking: true })
     try {
-      const res = await api.post('/api/auth/start-login', { openid: wx.getStorageSync('openid') })
-      if (res.loginFailed) {
-        this.setData({
-          loginStep: 'loginFailed',
-          loginFailedMsg: res.message,
-          loginFailedScreenshot: res.screenshot,
-          loginFailedDiag: res.diag
-        })
-      } else if (res.needsCaptcha) {
-        this.setData({ loginStep: 'needCaptcha', captchaImage: res.captchaImage })
-      } else if (res.needsCode) {
-        this.setData({ loginStep: 'needCode', code: '', isQrMfa: false })
-      } else {
-        this.setData({ loginStep: 'done' })
-      }
+      const res = await api.post('/api/grade/login-start', {
+        openid: wx.getStorageSync('openid'),
+        mode: 'password'
+      })
+      this.handleLoginResult(res)
     } catch (e) {
       wx.showModal({ title: '登录失败', content: e.message, showCancel: false })
     } finally { this.setData({ checking: false }) }
+  },
+
+  // 处理登录响应
+  handleLoginResult(res) {
+    if (res.error) {
+      wx.showModal({ title: '登录失败', content: res.error, showCancel: false })
+    } else if (res.done) {
+      this.setData({ loginStep: 'done' })
+    } else if (res.loginFailed) {
+      this.setData({
+        loginStep: 'loginFailed',
+        loginFailedMsg: res.message,
+        loginFailedScreenshot: res.screenshot
+      })
+    } else if (res.needsCaptcha) {
+      this.setData({ loginStep: 'needCaptcha', captchaImage: res.captchaImage })
+    } else if (res.needsCode) {
+      this.setData({ loginStep: 'needCode', code: '', isQrMfa: false })
+    } else if (res.hasQrCode) {
+      this.setData({ loginStep: 'qrcode', qrcodeImage: res.qrcode, qrMessage: res.message })
+    } else {
+      this.setData({ loginStep: 'done' })
+    }
   },
 
   async submitCode() {
@@ -64,11 +77,12 @@ Page({
     if (code.length < 4) { wx.showToast({ title: '请输入完整验证码', icon: 'none' }); return }
     this.setData({ submitting: true })
     try {
-      await api.post('/api/auth/submit-code', { openid: wx.getStorageSync('openid'), code })
-      wx.showToast({ title: '验证成功', icon: 'success' })
-      this.setData({ loginStep: 'done' })
+      const res = await api.post('/api/grade/login-submit-code', {
+        openid: wx.getStorageSync('openid'), code
+      })
+      this.handleLoginResult(res)
     } catch (e) {
-      wx.showModal({ title: '验证失败', content: e.message, showCancel: false })
+      wx.showModal({ title: '提交失败', content: e.message, showCancel: false })
     } finally { this.setData({ submitting: false }) }
   },
 
@@ -80,15 +94,10 @@ Page({
     if (!text) { wx.showToast({ title: '请输入验证码', icon: 'none' }); return }
     this.setData({ submitting: true })
     try {
-      const res = await api.post('/api/auth/submit-captcha', { openid: wx.getStorageSync('openid'), captcha: text })
-      if (res.needsCaptcha) {
-        this.setData({ captchaImage: res.captchaImage, captchaText: '' })
-        wx.showToast({ title: '验证码错误，请重试', icon: 'none' })
-      } else if (res.needsCode) {
-        this.setData({ loginStep: 'needCode', isQrMfa: false })
-      } else {
-        this.setData({ loginStep: 'done' })
-      }
+      const res = await api.post('/api/grade/login-submit-code', {
+        openid: wx.getStorageSync('openid'), code: text
+      })
+      this.handleLoginResult(res)
     } catch (e) {
       wx.showModal({ title: '提交失败', content: e.message, showCancel: false })
     } finally { this.setData({ submitting: false }) }
@@ -154,19 +163,10 @@ Page({
     if (code.length < 4) { wx.showToast({ title: '请输入完整验证码', icon: 'none' }); return }
     this.setData({ submitting: true })
     try {
-      if (this.data.isQrMfa) {
-        const res = await api.post('/api/auth/qrcode-submit-code', { openid: wx.getStorageSync('openid'), code })
-        if (res.success) {
-          wx.showToast({ title: 'MFA 验证成功！', icon: 'success' })
-          this.setData({ loginStep: 'done', isQrMfa: false })
-        } else {
-          wx.showToast({ title: res.message || '验证失败', icon: 'none' })
-        }
-      } else {
-        await api.post('/api/auth/submit-code', { openid: wx.getStorageSync('openid'), code })
-        wx.showToast({ title: '验证成功', icon: 'success' })
-        this.setData({ loginStep: 'done' })
-      }
+      const res = await api.post('/api/grade/login-submit-code', {
+        openid: wx.getStorageSync('openid'), code
+      })
+      this.handleLoginResult(res)
     } catch (e) {
       wx.showModal({ title: '提交失败', content: e.message, showCancel: false })
     } finally { this.setData({ submitting: false }) }

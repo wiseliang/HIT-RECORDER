@@ -27,6 +27,25 @@
     <button class="clear-btn" bindtap="clearCredential">清除凭证</button>
   </view>
 
+  <!-- 周次基准 -->
+  <view class="card">
+    <text class="card-title">📅 周次基准日期</text>
+    <text class="card-desc">当前第1周周一：{{week1Date}}</text>
+    <text class="card-desc">当前：第{{currentWeek}}周 · {{weekRange}}</text>
+
+    <view class="form-item">
+      <text class="form-label">新基准日期（周一）</text>
+      <picker mode="date" value="{{newStartDate}}" bindchange="onDateChange">
+        <view class="picker-value">{{newStartDate || '请选择第1周的周一'}}</view>
+      </picker>
+    </view>
+
+    <button class="save-btn" bindtap="setWeekStart" loading="{{settingWeek}}">
+      📅 更新周次基准
+    </button>
+    <text class="save-hint">选择新学期第1周周一的日期</text>
+  </view>
+
   <!-- 关于 -->
   <view class="card">
     <text class="card-title">ℹ️ 关于</text>

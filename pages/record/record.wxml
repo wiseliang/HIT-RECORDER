@@ -20,9 +20,7 @@
       <button class="code-btn" bindtap="checkQrLogin" loading="{{checkingQr}}" style="width:100%;margin-top:16rpx;">🔄 已完成扫码，验证登录</button>
       <button class="code-btn" bindtap="testQrScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:8rpx;background:#666;">📸 测试：查看当前页面截图</button>
       <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
-      <text wx:if="{{testDiag}}" class="diag-text" style="font-size:22rpx;">URL: {{testDiag.url}}</text>
-      <text wx:if="{{testDiag}}" class="diag-text" style="font-size:22rpx;">QR可见: {{testDiag.qrVisible}}, 成功图标: {{testDiag.successVisible}}</text>
-      <text wx:if="{{testDiag}}" class="diag-text" style="font-size:22rpx;">页面文字: {{testDiag.bodyText}}</text>
+      <!-- diag hidden -->
       <text class="resend-link" bindtap="checkLogin">返回密码登录</text>
     </block>
 
@@ -54,10 +52,12 @@
       </view>
       <text class="resend-link" bindtap="resendCode" wx:if="{{!resending}}">未收到？重新发送</text>
       <text class="resend-link disabled" wx:else>重新发送中...</text>
+      <!-- 截图诊断已隐藏
       <button class="code-btn" bindtap="testQrScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:12rpx;background:#666;">📸 截图诊断</button>
       <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
       <text wx:if="{{testDiag}}" class="diag-text">URL: {{testDiag.url}}</text>
       <text wx:if="{{testDiag}}" class="diag-text">Body: {{testDiag.bodyText}}</text>
+      -->
     </block>
   </view>
 
@@ -132,10 +132,12 @@
       🚀 开始录入
     </button>
 
-    <!-- 截图诊断 -->
+    <!-- 截图诊断已隐藏 -->
+    <!--
     <button class="code-btn" bindtap="testQrScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:16rpx;background:#666;">📸 截图诊断（查看浏览器状态）</button>
     <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
     <text wx:if="{{testDiag}}" class="diag-text">URL: {{testDiag.url}}</text>
     <text wx:if="{{testDiag}}" class="diag-text">Body: {{testDiag.bodyText}}</text>
+    -->
   </block>
 </view>

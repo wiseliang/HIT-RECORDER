@@ -28,10 +28,12 @@
       <text class="resend-link" bindtap="resendCode" wx:if="{{!resending}}">未收到？重新发送</text>
       <text class="resend-link disabled" wx:else>重新发送中...</text>
     </block>
+    <!-- 截图诊断已隐藏
     <button class="code-btn" bindtap="testScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:12rpx;background:#666;">📸 截图诊断</button>
     <image wx:if="{{testScreenshot}}" class="captcha-img" src="{{testScreenshot}}" mode="widthFix" style="margin-top:12rpx;" />
     <text wx:if="{{testDiag}}" class="diag-text">URL: {{testDiag.url}}</text>
     <text wx:if="{{testDiag}}" class="diag-text">Body: {{testDiag.bodyText}}</text>
+    -->
   </view>
 
   <!-- 正常运行中 -->

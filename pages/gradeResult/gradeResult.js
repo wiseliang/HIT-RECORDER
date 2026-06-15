@@ -87,6 +87,7 @@ Page({
 
       this.setData({
         status: task.status,
+        qrcode: task.qrcode || '',
         year: task.year,
         school: task.school,
         major: task.major,

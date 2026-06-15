@@ -1,4 +1,5 @@
 const api = require('../../utils/api')
+const { getCurrentWeek, getWeekRange } = require('../../utils/week')
 
 Page({
   data: {
@@ -6,11 +7,19 @@ Page({
     password: '',
     hasCredential: false,
     maskedId: '',
-    saving: false
+    saving: false,
+
+    // 周次基准
+    week1Date: '',
+    currentWeek: 0,
+    weekRange: '',
+    newStartDate: '',
+    settingWeek: false
   },
 
   onShow() {
     this.checkCredential()
+    this.loadWeekInfo()
   },
 
   async checkCredential() {
@@ -84,5 +93,54 @@ Page({
         }
       }
     })
+  },
+
+  // ===== 周次基准 =====
+  loadWeekInfo() {
+    const week = getCurrentWeek()
+    this.setData({
+      currentWeek: week,
+      weekRange: getWeekRange(week),
+      week1Date: '2026-03-09'
+    })
+  },
+
+  onDateChange(e) {
+    this.setData({ newStartDate: e.detail.value })
+  },
+
+  async setWeekStart() {
+    const { newStartDate } = this.data
+    if (!newStartDate) {
+      wx.showToast({ title: '请先选择日期', icon: 'none' })
+      return
+    }
+
+    const d = new Date(newStartDate.replace(/-/g, '/'))
+    if (d.getDay() !== 1) {
+      const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+      wx.showModal({
+        title: '日期不是周一',
+        content: `选择的日期是${dayNames[d.getDay()]}，请选择周一`,
+        showCancel: false
+      })
+      return
+    }
+
+    this.setData({ settingWeek: true })
+    try {
+      const res = await api.post('/api/week/set-start-date', { date: newStartDate })
+      wx.showToast({ title: '周次基准已更新', icon: 'success' })
+      this.setData({
+        week1Date: res.newDate,
+        currentWeek: res.currentWeek,
+        weekRange: res.weekRange,
+        newStartDate: ''
+      })
+    } catch (e) {
+      wx.showModal({ title: '更新失败', content: e.message, showCancel: false })
+    } finally {
+      this.setData({ settingWeek: false })
+    }
   }
 })

@@ -1,12 +1,22 @@
 <view class="container">
+  <!-- QR 扫码（教务系统二次登录）-->
+  <view wx:if="{{status === 'awaiting_code' && qrcode}}" class="await-section">
+    <text class="await-icon">📱</text>
+    <text class="await-title">教务系统需要扫码登录</text>
+    <text class="await-hint">{{currentPhase || '请用 HIT APP 扫描下方二维码'}}</text>
+    <image wx:if="{{qrcode}}" class="captcha-img" src="{{qrcode}}" mode="widthFix" show-menu-by-longpress="{{true}}" />
+    <text class="resend-link">扫码后页面自动跳转，无需手动操作</text>
+    <button class="code-btn" bindtap="testScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:12rpx;background:#666;">📸 截图诊断</button>
+  </view>
+
   <!-- 等待验证码 -->
-  <view wx:if="{{needsCaptcha || status === 'awaiting_code'}}" class="await-section">
+  <view wx:elif="{{needsCaptcha || status === 'awaiting_code'}}" class="await-section">
     <text class="await-icon">🔐</text>
     <text class="await-title">需要验证码</text>
     <text class="await-hint">{{currentPhase || '请输入验证码'}}</text>
     <image wx:if="{{captchaImage}}" class="captcha-img" src="{{captchaImage}}" mode="widthFix" />
     <view class="code-row">
-      <input class="code-input" placeholder="{{needsCaptcha ? '输入图片验证码' : '输入HIT APP验证码'}}" value="{{code}}" bindinput="onCodeInput" maxlength="6" />
+      <input class="code-input" placeholder="{{needsCaptcha ? '输入图片验证码' : '输入短信/APP验证码'}}" value="{{code}}" bindinput="onCodeInput" maxlength="6" />
       <button class="code-btn" bindtap="submitCaptchaOrCode" loading="{{submitting}}">提交</button>
     </view>
     <button class="code-btn" bindtap="testScreenshot" loading="{{testingQr}}" style="width:100%;margin-top:12rpx;background:#666;">📸 截图诊断</button>
