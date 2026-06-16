@@ -1,4 +1,8 @@
-const BASE_URL = 'https://118.190.208.230'
+// Cloudflare Tunnel（临时域名，重启会变）
+// Cloudflare Tunnel URL（服务器重启后会变，需同步更新）
+const BASE_URL = 'https://terrorists-solaris-trail-care.trycloudflare.com'
+// 原直连: 'https://118.190.208.230'
+// 原服务器直连: 'https://118.190.208.230'
 
 function request(method, path, data) {
   const openid = wx.getStorageSync('openid')
