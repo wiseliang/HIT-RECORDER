@@ -9,6 +9,8 @@ function request(method, path, data) {
   const header = {
     'Content-Type': 'application/json'
   }
+  const token = wx.getStorageSync('authToken')
+  if (token) header.Authorization = 'Bearer ' + token
   if (openid) {
     header['x-openid'] = openid
   }

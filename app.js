@@ -30,11 +30,6 @@ App({
   },
 
   async doLogin() {
-    const openid = wx.getStorageSync('openid')
-    if (openid) {
-      this.globalData.openid = openid
-      return
-    }
 
     try {
       const res = await new Promise((resolve, reject) => {
@@ -42,6 +37,8 @@ App({
       })
 
       const data = await api.post('/api/auth/login', { code: res.code })
+      if (!data.token) throw new Error('登录响应无效，请更新服务端')
+      wx.setStorageSync('authToken', data.token)
       wx.setStorageSync('openid', data.openid)
       this.globalData.openid = data.openid
       this.globalData.hasCredential = data.hasCredential

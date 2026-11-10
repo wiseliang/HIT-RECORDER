@@ -269,3 +269,14 @@ pages/
 2. `server/services/orchestrator.js` 新增类型处理
 3. 数据库 `tasks.type` ENUM 新增值
 4. 前端新增入口和配置项
+
+
+## 会话隔离与周次修复升级
+
+此客户端需与 `wiseliang/hit-record-server` 的签名会话版本配套使用；所有受保护请求会携带服务端登录返回的 bearer token。不能只更新一端。
+
+首页和设置页直接读取 `/api/week/current` 的周次与学期基准。修改全局基准需要服务端 `ADMIN_OPENIDS` 中的管理员身份。后端持久化配置后立即生效。
+
+小程序启动时重新执行真实微信登录并保存 token。服务端需配置真实微信 AppID 和 Secret。服务地址仍由 `utils/api.js` 的 `BASE_URL` 配置，发布前应改为已配置白名单的固定 HTTPS 域名。
+
+验证：`node --test tests/*.test.cjs`。

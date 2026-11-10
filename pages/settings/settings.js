@@ -1,5 +1,4 @@
 const api = require('../../utils/api')
-const { getCurrentWeek, getWeekRange } = require('../../utils/week')
 
 Page({
   data: {
@@ -96,13 +95,11 @@ Page({
   },
 
   // ===== 周次基准 =====
-  loadWeekInfo() {
-    const week = getCurrentWeek()
-    this.setData({
-      currentWeek: week,
-      weekRange: getWeekRange(week),
-      week1Date: '2026-03-09'
-    })
+  async loadWeekInfo() {
+    try {
+      const r = await api.get('/api/week/current')
+      this.setData({ currentWeek: r.week, weekRange: r.weekRange, week1Date: r.startDate })
+    } catch (_) { wx.showToast({ title: '无法获取当前周次', icon: 'none' }) }
   },
 
   onDateChange(e) {

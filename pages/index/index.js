@@ -1,5 +1,4 @@
 const api = require('../../utils/api')
-const { getCurrentWeek, getWeekRange } = require('../../utils/week')
 
 Page({
   data: {
@@ -7,8 +6,9 @@ Page({
   },
 
   onShow() {
-    const week = getCurrentWeek()
-    this.setData({ week, weekRange: getWeekRange(week), isOdd: week % 2 === 1 })
+    api.get('/api/week/current').then(r => {
+      this.setData({ week: r.week, weekRange: r.weekRange, isOdd: r.isOdd })
+    }).catch(() => wx.showToast({ title: '无法获取当前周次', icon: 'none' }))
     this.checkCred()
   },
 
@@ -20,6 +20,7 @@ Page({
   },
 
   goRecord(e) {
+    if (!this.data.week) return
     if (!this.data.hasCredential) {
       wx.showToast({ title: '请先配置凭证', icon: 'none' })
       return
